@@ -7,9 +7,16 @@ end
 
 bufferline.setup {
    options = {
-      offsets = { { filetype = "NvimTree", text = "", padding = 1 } },
+      offsets = { { filetype = "NvimTree", text = "Explorer", text_aligh = "center", padding = 1 } },
+      close_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
+      right_mouse_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
+      left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
+      middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
+      indicator_icon = "▎",
+
       buffer_close_icon = "",
       modified_icon = "",
+      --  modified_icon = "●",
       close_icon = "",
       show_close_icon = true,
       left_trunc_marker = "",
@@ -18,7 +25,7 @@ bufferline.setup {
       max_prefix_length = 13,
       tab_size = 20,
       show_tab_indicators = true,
-      enforce_regular_tabs = false,
+      enforce_regular_tabs = true,
       view = "multiwindow",
       show_buffer_close_icons = true,
       separator_style = "thin",

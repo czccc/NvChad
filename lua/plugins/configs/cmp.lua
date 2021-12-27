@@ -1,3 +1,5 @@
+local plugin_maps = require("core.utils").load_config().mappings.plugins.cmp
+
 local present, cmp = pcall(require, "cmp")
 
 if not present then
@@ -27,17 +29,21 @@ cmp.setup {
       end,
    },
    mapping = {
-      ["<C-p>"] = cmp.mapping.select_prev_item(),
-      ["<C-n>"] = cmp.mapping.select_next_item(),
-      ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-      ["<C-f>"] = cmp.mapping.scroll_docs(4),
-      ["<C-Space>"] = cmp.mapping.complete(),
-      ["<C-e>"] = cmp.mapping.close(),
+      ["<C-k>"] = cmp.mapping.select_prev_item(),
+      ["<C-j>"] = cmp.mapping.select_next_item(),
+      ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+      ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+      ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+      ["<C-e>"] = cmp.mapping{
+         i = cmp.mapping.abort(),
+         c = cmp.mapping.close(),
+      },
+      ["C-y"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
       ["<CR>"] = cmp.mapping.confirm {
          behavior = cmp.ConfirmBehavior.Replace,
          select = true,
       },
-      ["<Tab>"] = function(fallback)
+      ["<Tab>"] = cmp.mapping(function(fallback)
          if cmp.visible() then
             cmp.select_next_item()
          elseif require("luasnip").expand_or_jumpable() then
@@ -45,8 +51,8 @@ cmp.setup {
          else
             fallback()
          end
-      end,
-      ["<S-Tab>"] = function(fallback)
+      end, { "i", "s", }),
+      ["<S-Tab>"] = cmp.mapping(cmp.mapping(function(fallback)
          if cmp.visible() then
             cmp.select_prev_item()
          elseif require("luasnip").jumpable(-1) then
@@ -54,7 +60,7 @@ cmp.setup {
          else
             fallback()
          end
-      end,
+      end, { "i", "s", }),
    },
    sources = {
       { name = "nvim_lsp" },
@@ -62,5 +68,16 @@ cmp.setup {
       { name = "buffer" },
       { name = "nvim_lua" },
       { name = "path" },
+   },
+   confirm_opts = {
+     behavior = cmp.ConfirmBehavior.Replace,
+     select = false,
+   },
+   documentation = {
+     border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+   },
+   experimental = {
+     ghost_text = false,
+     native_menu = false,
    },
 }
