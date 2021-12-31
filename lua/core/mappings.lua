@@ -14,61 +14,6 @@ local M = {}
 
 -- these mappings will only be called during initialization
 M.misc = function()
-   local function non_config_mappings()
-      -- Don't copy the replaced text after pasting in visual mode
-      map("v", "p", '"_dP')
-
-      -- Allow moving the cursor through wrapped lines with j, k, <Up> and <Down>
-      -- http://www.reddit.com/r/vim/comments/2k4cbr/problem_with_gj_and_gk/
-      -- empty mode is same as using :map
-      -- also don't use g[j|k] when in operator pending mode, so it doesn't alter d, y or c behaviour
-      map("", "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
-      map("", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
-      map("", "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
-      map("", "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
-
-      -- use ESC to turn off search highlighting
-      map("n", "<Esc>", ":noh <CR>")
-
-      -- center cursor when moving (goto_definition)
-
-      -- yank from current cursor to end of line
-      map("n", "Y", "yg$")
-   end
-
-   local function optional_mappings()
-      -- don't yank text on cut ( x )
-      if not nvChad_options.copy_cut then
-         map({ "n", "v" }, "x", '"_x')
-      end
-
-      -- don't yank text on delete ( dd )
-      if not nvChad_options.copy_del then
-         map({ "n", "v" }, "d", '"_d')
-      end
-
-      -- navigation within insert mode
-      if nvChad_options.insert_nav then
-         local inav = maps.insert_nav
-
-         map("i", inav.backward, "<Left>")
-         map("i", inav.end_of_line, "<End>")
-         map("i", inav.forward, "<Right>")
-         map("i", inav.next_line, "<Up>")
-         map("i", inav.prev_line, "<Down>")
-         map("i", inav.beginning_of_line, "<ESC>^i")
-      end
-
-      -- easier navigation between windows
-      if nvChad_options.window_nav then
-         local wnav = maps.window_nav
-
-         map("n", wnav.moveLeft, "<C-w>h")
-         map("n", wnav.moveRight, "<C-w>l")
-         map("n", wnav.moveUp, "<C-w>k")
-         map("n", wnav.moveDown, "<C-w>j")
-      end
-   end
 
    local function required_mappings()
       map("n", maps.misc.cheatsheet, ":lua require('nvchad.cheatsheet').show() <CR>") -- show keybinds
@@ -79,32 +24,6 @@ M.misc = function()
       map("n", maps.misc.line_number_toggle, ":set nu! <CR>") -- toggle numbers
       map("n", maps.misc.save_file, ":w <CR>") -- ctrl + s to save file
 
-      -- terminal mappings --
-      local term_maps = maps.terminal
-      -- get out of terminal mode
-      map("t", term_maps.esc_termmode, "<C-\\><C-n>")
-      -- hide a term from within terminal mode
-      map("t", term_maps.esc_hide_termmode, "<C-\\><C-n> :lua require('core.utils').close_buffer() <CR>")
-      -- pick a hidden term
-      map("n", term_maps.pick_term, ":Telescope terms <CR>")
-      -- Open terminals
-      -- TODO this opens on top of an existing vert/hori term, fixme
-      map("n", term_maps.new_horizontal, ":execute 15 .. 'new +terminal' | let b:term_type = 'hori' | startinsert <CR>")
-      map("n", term_maps.new_vertical, ":execute 'vnew +terminal' | let b:term_type = 'vert' | startinsert <CR>")
-      map("n", term_maps.new_window, ":execute 'terminal' | let b:term_type = 'wind' | startinsert <CR>")
-      -- terminal mappings end --
-
-      -- Add Packer commands because we are not loading it at startup
-      cmd "silent! command PackerClean lua require 'plugins' require('packer').clean()"
-      cmd "silent! command PackerCompile lua require 'plugins' require('packer').compile()"
-      cmd "silent! command PackerInstall lua require 'plugins' require('packer').install()"
-      cmd "silent! command PackerStatus lua require 'plugins' require('packer').status()"
-      cmd "silent! command PackerSync lua require 'plugins' require('packer').sync()"
-      cmd "silent! command PackerUpdate lua require 'plugins' require('packer').update()"
-
-      -- add NvChadUpdate command and mapping
-      cmd "silent! command! NvChadUpdate lua require('nvchad').update_nvchad()"
-      map("n", maps.misc.update_nvchad, ":NvChadUpdate <CR>")
    end
 
    non_config_mappings()
